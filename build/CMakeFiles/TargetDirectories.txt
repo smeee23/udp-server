@@ -1,0 +1,3 @@
+/home/smeee/projects/c_projects/ethereum-monitor/build/CMakeFiles/compressor.dir
+/home/smeee/projects/c_projects/ethereum-monitor/build/CMakeFiles/edit_cache.dir
+/home/smeee/projects/c_projects/ethereum-monitor/build/CMakeFiles/rebuild_cache.dir

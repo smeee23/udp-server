@@ -1,0 +1,1 @@
+. "/home/smeee/projects/c_projects/ethereum-monitor/build/deactivate_conanrunenv-release-x86_64.sh"
