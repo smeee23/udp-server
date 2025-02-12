@@ -5,10 +5,18 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <sys/time.h>
+#include <signal.h>
 
 #define SERVER_IP "192.168.1.3"  
 #define SERVER_PORT 9979
 #define BUFFER_SIZE 1024
+int sockfd;
+
+void handle_sigint(int sig) {
+    printf("\nClosing client socket...\n");
+    close(sockfd);
+    exit(EXIT_SUCCESS);
+}
 
 void send_udp_message(const char *message) {
     int sock;
@@ -16,6 +24,7 @@ void send_udp_message(const char *message) {
     socklen_t addr_len = sizeof(server_addr);
     char recv_buffer[BUFFER_SIZE];
     int enable_broadcast = 1;
+    signal(SIGINT, handle_sigint);
 
     // Create UDP socket
     sock = socket(AF_INET, SOCK_DGRAM, 0);

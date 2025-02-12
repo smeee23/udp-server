@@ -3,15 +3,24 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <signal.h>
 
 #define PORT 9979
 #define BUFFER_SIZE 1024
 
+int sockfd;
+
+void handle_sigint(int sig) {
+    printf("\nShutting down server...\n");
+    close(sockfd);
+    exit(EXIT_SUCCESS);
+}
+
 int main() {
-    int sockfd;
     struct sockaddr_in server_addr, client_addr;
     char buffer[BUFFER_SIZE];
     socklen_t addr_len = sizeof(client_addr);
+    signal(SIGINT, handle_sigint);
 
     // Create UDP socket
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
@@ -43,8 +52,21 @@ int main() {
             continue;
         }
 
-        buffer[received] = '\0'; // Null-terminate message
-        printf("Received: %s\n", buffer);
+        if (received >= BUFFER_SIZE) {
+            buffer[BUFFER_SIZE - 1] = '\0'; // Ensure null-termination
+        } else {
+            buffer[received] = '\0';
+        }
+        printf("Received from %s:%d - %s\n",
+        inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), buffer);
+
+        // Send acknowledgment back to client
+        const char *ack_message = "Received";
+        ssize_t sent = sendto(sockfd, ack_message, strlen(ack_message), 0, 
+                              (struct sockaddr *)&client_addr, addr_len);
+        if (sent < 0) {
+            perror("Send failed");
+        }
     }
 
     // Close socket (though it never reaches here)
